@@ -169,192 +169,195 @@ pinMode(echoPin_back, INPUT); // Sets the echoPin as an Input
  // FuzzyRule "IF distance = samll and carspeed = slow THEN situation = caution"
  FuzzyRuleAntecedent* ifDistanceSmallAndCarspeedSlow = new FuzzyRuleAntecedent();
 ifDistanceSmallAndCarspeedSlow->joinWithAND(small, slow); 
- FuzzyRuleConsequent* thenSitCaution = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
- thenSitCaution->addOutput(caution);// Adding corresponding FuzzySet to Consequent object
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule01 = new FuzzyRule(1, ifDistanceSmallAndCarspeedSlow, thenSitCaution); // Passing the Antecedent and the Consequent of expression
- 
- fuzzy->addFuzzyRule(fuzzyRule01); // Adding FuzzyRule to Fuzzy object
 
- // FuzzyRule "IF distance_back = small and carspeed = slow THEN situation = caution"
+// FuzzyRule "IF distance_back = small and carspeed = slow THEN situation = caution"
  FuzzyRuleAntecedent* ifDistanceBACKSmallAndCarspeedSlow = new FuzzyRuleAntecedent();
 ifDistanceBACKSmallAndCarspeedSlow->joinWithAND(small_back, slow); 
 
+ FuzzyRuleAntecedent* ifDSmallAndCarspeedSlow = new FuzzyRuleAntecedent();
+ifDSmallAndCarspeedSlow->joinWithOR(ifDistanceSmallAndCarspeedSlow, ifDistanceBACKSmallAndCarspeedSlow); 
+
+
+ FuzzyRuleConsequent* thenSitCaution = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
+ thenSitCaution->addOutput(caution);// Adding corresponding FuzzySet to Consequent object
  // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule10 = new FuzzyRule(10, ifDistanceBACKSmallAndCarspeedSlow, thenSitCaution); // Passing the Antecedent and the Consequent of expression
+ FuzzyRule* fuzzyRule01 = new FuzzyRule(1, ifDSmallAndCarspeedSlow, thenSitCaution); // Passing the Antecedent and the Consequent of expression
  
- fuzzy->addFuzzyRule(fuzzyRule10); // Adding FuzzyRule to Fuzzy object
+ fuzzy->addFuzzyRule(fuzzyRule01); // Adding FuzzyRule to Fuzzy object
 
-
+/**********************************************************/
+ 
  
  // FuzzyRule "IF distance = small and carspeed = average THEN situation = threat"
  FuzzyRuleAntecedent* ifDistanceSmallAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceSmallAndCarspeedAverage->joinWithAND(small,average); // Adding corresponding FuzzySet to Antecedent object
- FuzzyRuleConsequent* thenSitThreat = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
- thenSitThreat->addOutput(threat); // Adding corresponding FuzzySet to Consequent object
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule02 = new FuzzyRule(2, ifDistanceSmallAndCarspeedAverage, thenSitThreat); // Passing the Antecedent and the Consequent of expression
-  
- fuzzy->addFuzzyRule(fuzzyRule02); // Adding FuzzyRule to Fuzzy object
-
   // FuzzyRule "IF distanceBACK = small and carspeed = average THEN situation = threat"
  FuzzyRuleAntecedent* ifDistanceBACKSmallAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceBACKSmallAndCarspeedAverage->joinWithAND(small_back,average); // Adding corresponding FuzzySet to Antecedent object
 
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule11 = new FuzzyRule(11, ifDistanceBACKSmallAndCarspeedAverage, thenSitThreat); // Passing the Antecedent and the Consequent of expression
-  
- fuzzy->addFuzzyRule(fuzzyRule11); // Adding FuzzyRule to Fuzzy object
 
-
+ FuzzyRuleAntecedent* ifDSmallAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDSmallAndCarspeedAverage->joinWithOR(ifDistanceSmallAndCarspeedAverage,ifDistanceBACKSmallAndCarspeedAverage); // Adding corresponding FuzzySet to Antecedent object
  
+ FuzzyRuleConsequent* thenSitThreat = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
+ thenSitThreat->addOutput(threat); // Adding corresponding FuzzySet to Consequent object
+ 
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule02 = new FuzzyRule(2, ifDSmallAndCarspeedAverage, thenSitThreat); // Passing the Antecedent and the Consequent of expression
+  
+ fuzzy->addFuzzyRule(fuzzyRule02); // Adding FuzzyRule to Fuzzy object
+
+/**********************************************************/
  
  // FuzzyRule "IF distance = small and carspeed = fast THEN sitaution = critical"
  FuzzyRuleAntecedent* ifDistanceSmallAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceSmallAndCarspeedFast->joinWithAND(small,fast); // Adding corresponding FuzzySet to Antecedent object
- FuzzyRuleConsequent* thenSitCritical = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
- thenSitCritical->addOutput(critical);// Adding corresponding FuzzySet to Consequent object
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule03 = new FuzzyRule(3, ifDistanceSmallAndCarspeedFast, thenSitCritical); // Passing the Antecedent and the Consequent of expression
  
- fuzzy->addFuzzyRule(fuzzyRule03); // Adding FuzzyRule to Fuzzy object
-
-
  // FuzzyRule "IF distanceBACK = small and carspeed = fast THEN sitaution = critical"
  FuzzyRuleAntecedent* ifDistanceBACKSmallAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceBACKSmallAndCarspeedFast->joinWithAND(small_back,fast); // Adding corresponding FuzzySet to Antecedent object
+
+  FuzzyRuleAntecedent* ifDSmallAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDSmallAndCarspeedFast->joinWithOR(ifDistanceSmallAndCarspeedFast,ifDistanceBACKSmallAndCarspeedFast); // Adding corresponding FuzzySet to Antecedent object
+ 
+ 
+ FuzzyRuleConsequent* thenSitCritical = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
+ thenSitCritical->addOutput(critical);// Adding corresponding FuzzySet to Consequent object
+
  
  // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule12 = new FuzzyRule(12, ifDistanceBACKSmallAndCarspeedFast, thenSitCritical); // Passing the Antecedent and the Consequent of expression
+ FuzzyRule* fuzzyRule03 = new FuzzyRule(3, ifDSmallAndCarspeedFast, thenSitCritical); // Passing the Antecedent and the Consequent of expression
+ 
+ fuzzy->addFuzzyRule(fuzzyRule03); // Adding FuzzyRule to Fuzzy object
 
- fuzzy->addFuzzyRule(fuzzyRule12); // Adding FuzzyRule to Fuzzy object
+ 
 
 
+/**********************************************************/
  
 
   // FuzzyRule "IF distance = moderate and carspeed = slow THEN sitaution = safe"
  FuzzyRuleAntecedent* ifDistanceModerateAndCarspeedSlow = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceModerateAndCarspeedSlow->joinWithAND(moderate,slow); // Adding corresponding FuzzySet to Antecedent object
- FuzzyRuleConsequent* thenSitSafe = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
- thenSitSafe->addOutput(safe);// Adding corresponding FuzzySet to Consequent object
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule04 = new FuzzyRule(4, ifDistanceModerateAndCarspeedSlow, thenSitSafe); // Passing the Antecedent and the Consequent of expression
- 
- fuzzy->addFuzzyRule(fuzzyRule04); // Adding FuzzyRule to Fuzzy object
-
 
   // FuzzyRule "IF distanceBACK = moderate and carspeed = slow THEN sitaution = safe"
  FuzzyRuleAntecedent* ifDistanceBACKModerateAndCarspeedSlow = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceBACKModerateAndCarspeedSlow->joinWithAND(moderate_back,slow); // Adding corresponding FuzzySet to Antecedent object
 
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule13 = new FuzzyRule(13, ifDistanceBACKModerateAndCarspeedSlow, thenSitSafe); // Passing the Antecedent and the Consequent of expression
- 
- fuzzy->addFuzzyRule(fuzzyRule13); // Adding FuzzyRule to Fuzzy object
 
+ FuzzyRuleAntecedent* ifDModerateAndCarspeedSlow = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDModerateAndCarspeedSlow->joinWithOR(ifDistanceModerateAndCarspeedSlow,ifDistanceBACKModerateAndCarspeedSlow); // Adding corresponding FuzzySet to Antecedent object
+ 
+ FuzzyRuleConsequent* thenSitSafe = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
+ thenSitSafe->addOutput(safe);// Adding corresponding FuzzySet to Consequent object
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule04 = new FuzzyRule(4, ifDModerateAndCarspeedSlow, thenSitSafe); // Passing the Antecedent and the Consequent of expression
+ 
+ fuzzy->addFuzzyRule(fuzzyRule04); // Adding FuzzyRule to Fuzzy object
+
+ /**********************************************************/
 
  
 
   // FuzzyRule "IF distance = moderate and carspeed = average THEN sitaution = caution"
  FuzzyRuleAntecedent* ifDistanceModerateAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceModerateAndCarspeedAverage->joinWithAND(moderate,average); // Adding corresponding FuzzySet to Antecedent object
- //FuzzyRuleConsequent* thenSitCaution = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
- thenSitCaution->addOutput(caution);// Adding corresponding FuzzySet to Consequent object
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule05 = new FuzzyRule(5, ifDistanceModerateAndCarspeedAverage, thenSitCaution); // Passing the Antecedent and the Consequent of expression
- 
- fuzzy->addFuzzyRule(fuzzyRule05); // Adding FuzzyRule to Fuzzy object
 
-   // FuzzyRule "IF distanceBACK = moderate and carspeed = average THEN sitaution = caution"
+    // FuzzyRule "IF distanceBACK = moderate and carspeed = average THEN sitaution = caution"
  FuzzyRuleAntecedent* ifDistanceBACKModerateAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceBACKModerateAndCarspeedAverage->joinWithAND(moderate_back,average); // Adding corresponding FuzzySet to Antecedent object
 
+  FuzzyRuleAntecedent* ifDModerateAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDModerateAndCarspeedAverage->joinWithOR(ifDistanceModerateAndCarspeedAverage,ifDistanceBACKModerateAndCarspeedAverage); // Adding corresponding FuzzySet to Antecedent object
+ 
+ FuzzyRuleConsequent* thenSitCaution = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
+ thenSitCaution->addOutput(caution);// Adding corresponding FuzzySet to Consequent object
  // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule14 = new FuzzyRule(14, ifDistanceBACKModerateAndCarspeedAverage, thenSitCaution); // Passing the Antecedent and the Consequent of expression
+ FuzzyRule* fuzzyRule05 = new FuzzyRule(5, ifDModerateAndCarspeedAverage, thenSitCaution); // Passing the Antecedent and the Consequent of expression
  
- fuzzy->addFuzzyRule(fuzzyRule14); // Adding FuzzyRule to Fuzzy object
+ fuzzy->addFuzzyRule(fuzzyRule05); // Adding FuzzyRule to Fuzzy object
 
 
+  /**********************************************************/
 
-
- 
 
   // FuzzyRule "IF distance = moderate and carspeed = fast THEN sitaution = caution"
  FuzzyRuleAntecedent* ifDistanceModerateAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceModerateAndCarspeedFast->joinWithAND(moderate,fast); // Adding corresponding FuzzySet to Antecedent object
-// FuzzyRuleConsequent* thenSitThreat = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
- thenSitThreat->addOutput(threat);// Adding corresponding FuzzySet to Consequent object
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule06 = new FuzzyRule(6, ifDistanceModerateAndCarspeedFast, thenSitThreat); // Passing the Antecedent and the Consequent of expression
- 
- fuzzy->addFuzzyRule(fuzzyRule06); // Adding FuzzyRule to Fuzzy object
 
 
   // FuzzyRule "IF distanceBACK = moderate and carspeed = fast THEN sitaution = caution"
  FuzzyRuleAntecedent* ifDistanceBACKModerateAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceBACKModerateAndCarspeedFast->joinWithAND(moderate_back,fast); // Adding corresponding FuzzySet to Antecedent object
 
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule15 = new FuzzyRule(15, ifDistanceBACKModerateAndCarspeedFast, thenSitThreat); // Passing the Antecedent and the Consequent of expression
+ FuzzyRuleAntecedent* ifDModerateAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDModerateAndCarspeedFast->joinWithOR(ifDistanceModerateAndCarspeedFast,ifDistanceBACKModerateAndCarspeedFast); // Adding corresponding FuzzySet to Antecedent object
  
- fuzzy->addFuzzyRule(fuzzyRule15); // Adding FuzzyRule to Fuzzy object
+ 
+// FuzzyRuleConsequent* thenSitThreat = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
+ thenSitThreat->addOutput(threat);// Adding corresponding FuzzySet to Consequent object
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule06 = new FuzzyRule(6, ifDModerateAndCarspeedFast, thenSitThreat); // Passing the Antecedent and the Consequent of expression
+ 
+ fuzzy->addFuzzyRule(fuzzyRule06); // Adding FuzzyRule to Fuzzy object
 
-
-
-
+  /**********************************************************/
  
 
    // FuzzyRule "IF distance = big and carspeed = slow THEN sitaution = safe"
  FuzzyRuleAntecedent* ifDistanceBigAndCarspeedSlow = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceBigAndCarspeedSlow->joinWithAND(big,slow); // Adding corresponding FuzzySet to Antecedent object
 // FuzzyRuleConsequent* thenSitSafe = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
- thenSitSafe->addOutput(safe);// Adding corresponding FuzzySet to Consequent object
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule07 = new FuzzyRule(7, ifDistanceBigAndCarspeedSlow, thenSitSafe); // Passing the Antecedent and the Consequent of expression
- 
- fuzzy->addFuzzyRule(fuzzyRule07); // Adding FuzzyRule to Fuzzy object
 
     // FuzzyRule "IF distanceback = big and carspeed = slow THEN sitaution = safe"
  FuzzyRuleAntecedent* ifDistanceBACKBigAndCarspeedSlow = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceBACKBigAndCarspeedSlow->joinWithAND(big_back,slow); // Adding corresponding FuzzySet to Antecedent object
 
+ FuzzyRuleAntecedent* ifDBigAndCarspeedSlow = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDBigAndCarspeedSlow->joinWithOR(ifDistanceBigAndCarspeedSlow,ifDistanceBACKBigAndCarspeedSlow); // Adding corresponding FuzzySet to Antecedent object
+ 
+
+ thenSitSafe->addOutput(safe);// Adding corresponding FuzzySet to Consequent object
  // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule16 = new FuzzyRule(16, ifDistanceBACKBigAndCarspeedSlow, thenSitSafe); // Passing the Antecedent and the Consequent of expression
+ FuzzyRule* fuzzyRule07 = new FuzzyRule(7, ifDBigAndCarspeedSlow, thenSitSafe); // Passing the Antecedent and the Consequent of expression
  
- fuzzy->addFuzzyRule(fuzzyRule16); // Adding FuzzyRule to Fuzzy object
+ fuzzy->addFuzzyRule(fuzzyRule07); // Adding FuzzyRule to Fuzzy object
 
-
-
-
- 
+   /**********************************************************/
 
     // FuzzyRule "IF distance = big and carspeed = average THEN sitaution = safe"
  FuzzyRuleAntecedent* ifDistanceBigAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceBigAndCarspeedSlow->joinWithAND(big,average); // Adding corresponding FuzzySet to Antecedent object
-// FuzzyRuleConsequent* thenSitSafe = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
- thenSitSafe->addOutput(safe);// Adding corresponding FuzzySet to Consequent object
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule08 = new FuzzyRule(8, ifDistanceBigAndCarspeedAverage, thenSitSafe); // Passing the Antecedent and the Consequent of expression
- 
- fuzzy->addFuzzyRule(fuzzyRule08); // Adding FuzzyRule to Fuzzy object
-
 
     // FuzzyRule "IF distance = big and carspeed = average THEN sitaution = safe"
  FuzzyRuleAntecedent* ifDistanceBACKBigAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceBACKBigAndCarspeedSlow->joinWithAND(big_back,average); // Adding corresponding FuzzySet to Antecedent object
 
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule17 = new FuzzyRule(17, ifDistanceBACKBigAndCarspeedAverage, thenSitSafe); // Passing the Antecedent and the Consequent of expression
+  FuzzyRuleAntecedent* ifDBigAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDBigAndCarspeedAverage->joinWithOR(ifDistanceBigAndCarspeedSlow,ifDistanceBACKBigAndCarspeedSlow); // Adding corresponding FuzzySet to Antecedent object
  
- fuzzy->addFuzzyRule(fuzzyRule17); // Adding FuzzyRule to Fuzzy object
+ FuzzyRuleConsequent* thenSitSafe = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
+ thenSitSafe->addOutput(safe);// Adding corresponding FuzzySet to Consequent object
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule08 = new FuzzyRule(8, ifDBigAndCarspeedAverage, thenSitSafe); // Passing the Antecedent and the Consequent of expression
+ 
+ fuzzy->addFuzzyRule(fuzzyRule08); // Adding FuzzyRule to Fuzzy object
 
-
-
+   /**********************************************************/
 
 
    // FuzzyRule "IF distance = big and carspeed = fast THEN sitaution = caution"
  FuzzyRuleAntecedent* ifDistanceBigAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceBigAndCarspeedFast->joinWithAND(big,fast); // Adding corresponding FuzzySet to Antecedent object
+
+
+   // FuzzyRule "IF distanceBACK = big and carspeed = fast THEN sitaution = caution"
+ FuzzyRuleAntecedent* ifDistanceBACKBigAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDistanceBACKBigAndCarspeedFast->joinWithAND(big_back,fast); // Adding corresponding FuzzySet to Antecedent object
+
+  FuzzyRuleAntecedent* ifDBigAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDBigAndCarspeedFast->joinWithOR(ifDistanceBigAndCarspeedFast,ifDistanceBACKBigAndCarspeedFast); // Adding corresponding FuzzySet to Antecedent object
+ 
  //FuzzyRuleConsequent* thenSitCaution = new FuzzyRuleConsequent(); // Instantiating a Consequent to expression
  thenSitCaution->addOutput(caution);// Adding corresponding FuzzySet to Consequent object
  // Instantiating a FuzzyRule object
@@ -362,16 +365,7 @@ ifDistanceBACKSmallAndCarspeedSlow->joinWithAND(small_back, slow);
  
  fuzzy->addFuzzyRule(fuzzyRule09); // Adding FuzzyRule to Fuzzy object
 
-
-   // FuzzyRule "IF distanceBACK = big and carspeed = fast THEN sitaution = caution"
- FuzzyRuleAntecedent* ifDistanceBACKBigAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
- ifDistanceBACKBigAndCarspeedFast->joinWithAND(big_back,fast); // Adding corresponding FuzzySet to Antecedent object
- 
- // Instantiating a FuzzyRule object
- FuzzyRule* fuzzyRule18 = new FuzzyRule(18, ifDistanceBACKBigAndCarspeedFast, thenSitCaution); // Passing the Antecedent and the Consequent of expression
- 
- fuzzy->addFuzzyRule(fuzzyRule18); // Adding FuzzyRule to Fuzzy object
- 
+   /**********************************************************/
 
 }
 
