@@ -35,15 +35,23 @@ SoftwareSerial mySerial(3,4);//tx rx
 // Step 1 -  Instantiating an object library
 Fuzzy* fuzzy = new Fuzzy();
 
-const int buzzer=8;
-const int redLed=7;
-const int blueLed = 6 ;
-const int greenLed = 2;
+//const int buzzer=8;
+const int buzzer=5;
+//const int redLed=7;
+const int redLed=8;
+//const int blueLed = 6 ;
+//const int greenLed = 2;
 const int trigPin = 9;
 const int echoPin = 12;
-const int minimum= 50; 
+const int minimum= 50;
+const int trigPin_back = 7;
+const int echoPin_back = 6; 
 long duration;
 int distance;
+
+int duration_back;
+int distance_back;
+
 int x,y,n;
 
 void setup() {
@@ -77,15 +85,19 @@ void setup() {
 //----------------REDLED------------
  pinMode(redLed,OUTPUT);
 
- //----------------BLUELED----------
- pinMode(blueLed,OUTPUT);
-
- //----------------GREENLED----------
- pinMode(greenLed,OUTPUT);
+// //----------------BLUELED----------
+// pinMode(blueLed,OUTPUT);
+//
+// //----------------GREENLED----------
+// pinMode(greenLed,OUTPUT);
 
    //--------------------ULTRASONIC SENSOR---------
 pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
 pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+
+//FOR SENSOR BACK
+pinMode(trigPin_back, OUTPUT); // Sets the trigPin as an Output
+pinMode(echoPin_back, INPUT); // Sets the echoPin as an Input
 
 //--------------------------FUZZY RULES------------------
   
@@ -101,6 +113,21 @@ pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 
  fuzzy->addFuzzyInput(distance); // Add FuzzyInput to Fuzzy object
 
+// DISTANCE BACK setup
+  FuzzyInput* distance_back = new FuzzyInput(3);// With its ID in param
+ 
+  // Creating the FuzzySet to compond FuzzyInput distance
+ FuzzySet* small_back = new FuzzySet(0, 0, 20, 40); // Small distance
+ distance->addFuzzySet(small_back); // Add FuzzySet small to distance
+ FuzzySet* moderate_back = new FuzzySet(30, 50, 50, 70); // Safe distance
+ distance->addFuzzySet(moderate_back); // Add FuzzySet safe to distance
+ FuzzySet* big_back = new FuzzySet(60, 80, 80, 80); // Big distance
+ distance->addFuzzySet(big_back); // Add FuzzySet big to distance
+
+ fuzzy->addFuzzyInput(distance_back); // Add FuzzyInput to Fuzzy object
+
+
+
 // SPEED
 // Step 3 - Creating a FuzzyInput speed
  FuzzyInput* carspeed = new FuzzyInput(2);// With its ID in param
@@ -114,6 +141,10 @@ pinMode(echoPin, INPUT); // Sets the echoPin as an Input
  carspeed->addFuzzySet(fast); // Add FuzzySet big to carspeed
 
  fuzzy->addFuzzyInput(carspeed); // Add FuzzyInput to Fuzzy object
+
+
+
+ 
  // OUTPUT
 
  // Passo 3 - Creating FuzzyOutput situation
@@ -131,6 +162,9 @@ pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 
  fuzzy->addFuzzyOutput(situation); // Add FuzzyOutput to Fuzzy object
 
+
+ 
+
  //Passo 4 - Assembly the Fuzzy rules
  // FuzzyRule "IF distance = samll and carspeed = slow THEN situation = caution"
  FuzzyRuleAntecedent* ifDistanceSmallAndCarspeedSlow = new FuzzyRuleAntecedent();
@@ -141,6 +175,17 @@ ifDistanceSmallAndCarspeedSlow->joinWithAND(small, slow);
  FuzzyRule* fuzzyRule01 = new FuzzyRule(1, ifDistanceSmallAndCarspeedSlow, thenSitCaution); // Passing the Antecedent and the Consequent of expression
  
  fuzzy->addFuzzyRule(fuzzyRule01); // Adding FuzzyRule to Fuzzy object
+
+ // FuzzyRule "IF distance_back = small and carspeed = slow THEN situation = caution"
+ FuzzyRuleAntecedent* ifDistanceBACKSmallAndCarspeedSlow = new FuzzyRuleAntecedent();
+ifDistanceBACKSmallAndCarspeedSlow->joinWithAND(small_back, slow); 
+
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule10 = new FuzzyRule(10, ifDistanceBACKSmallAndCarspeedSlow, thenSitCaution); // Passing the Antecedent and the Consequent of expression
+ 
+ fuzzy->addFuzzyRule(fuzzyRule10); // Adding FuzzyRule to Fuzzy object
+
+
  
  // FuzzyRule "IF distance = small and carspeed = average THEN situation = threat"
  FuzzyRuleAntecedent* ifDistanceSmallAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
@@ -151,6 +196,18 @@ ifDistanceSmallAndCarspeedSlow->joinWithAND(small, slow);
  FuzzyRule* fuzzyRule02 = new FuzzyRule(2, ifDistanceSmallAndCarspeedAverage, thenSitThreat); // Passing the Antecedent and the Consequent of expression
   
  fuzzy->addFuzzyRule(fuzzyRule02); // Adding FuzzyRule to Fuzzy object
+
+  // FuzzyRule "IF distanceBACK = small and carspeed = average THEN situation = threat"
+ FuzzyRuleAntecedent* ifDistanceBACKSmallAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDistanceBACKSmallAndCarspeedAverage->joinWithAND(small_back,average); // Adding corresponding FuzzySet to Antecedent object
+
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule11 = new FuzzyRule(11, ifDistanceBACKSmallAndCarspeedAverage, thenSitThreat); // Passing the Antecedent and the Consequent of expression
+  
+ fuzzy->addFuzzyRule(fuzzyRule11); // Adding FuzzyRule to Fuzzy object
+
+
+ 
  
  // FuzzyRule "IF distance = small and carspeed = fast THEN sitaution = critical"
  FuzzyRuleAntecedent* ifDistanceSmallAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
@@ -162,6 +219,19 @@ ifDistanceSmallAndCarspeedSlow->joinWithAND(small, slow);
  
  fuzzy->addFuzzyRule(fuzzyRule03); // Adding FuzzyRule to Fuzzy object
 
+
+ // FuzzyRule "IF distanceBACK = small and carspeed = fast THEN sitaution = critical"
+ FuzzyRuleAntecedent* ifDistanceBACKSmallAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDistanceBACKSmallAndCarspeedFast->joinWithAND(small_back,fast); // Adding corresponding FuzzySet to Antecedent object
+ 
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule12 = new FuzzyRule(12, ifDistanceBACKSmallAndCarspeedFast, thenSitCritical); // Passing the Antecedent and the Consequent of expression
+
+ fuzzy->addFuzzyRule(fuzzyRule12); // Adding FuzzyRule to Fuzzy object
+
+
+ 
+
   // FuzzyRule "IF distance = moderate and carspeed = slow THEN sitaution = safe"
  FuzzyRuleAntecedent* ifDistanceModerateAndCarspeedSlow = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceModerateAndCarspeedSlow->joinWithAND(moderate,slow); // Adding corresponding FuzzySet to Antecedent object
@@ -171,6 +241,19 @@ ifDistanceSmallAndCarspeedSlow->joinWithAND(small, slow);
  FuzzyRule* fuzzyRule04 = new FuzzyRule(4, ifDistanceModerateAndCarspeedSlow, thenSitSafe); // Passing the Antecedent and the Consequent of expression
  
  fuzzy->addFuzzyRule(fuzzyRule04); // Adding FuzzyRule to Fuzzy object
+
+
+  // FuzzyRule "IF distanceBACK = moderate and carspeed = slow THEN sitaution = safe"
+ FuzzyRuleAntecedent* ifDistanceBACKModerateAndCarspeedSlow = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDistanceBACKModerateAndCarspeedSlow->joinWithAND(moderate_back,slow); // Adding corresponding FuzzySet to Antecedent object
+
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule13 = new FuzzyRule(13, ifDistanceBACKModerateAndCarspeedSlow, thenSitSafe); // Passing the Antecedent and the Consequent of expression
+ 
+ fuzzy->addFuzzyRule(fuzzyRule13); // Adding FuzzyRule to Fuzzy object
+
+
+ 
 
   // FuzzyRule "IF distance = moderate and carspeed = average THEN sitaution = caution"
  FuzzyRuleAntecedent* ifDistanceModerateAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
@@ -182,6 +265,20 @@ ifDistanceSmallAndCarspeedSlow->joinWithAND(small, slow);
  
  fuzzy->addFuzzyRule(fuzzyRule05); // Adding FuzzyRule to Fuzzy object
 
+   // FuzzyRule "IF distanceBACK = moderate and carspeed = average THEN sitaution = caution"
+ FuzzyRuleAntecedent* ifDistanceBACKModerateAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDistanceBACKModerateAndCarspeedAverage->joinWithAND(moderate_back,average); // Adding corresponding FuzzySet to Antecedent object
+
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule14 = new FuzzyRule(14, ifDistanceBACKModerateAndCarspeedAverage, thenSitCaution); // Passing the Antecedent and the Consequent of expression
+ 
+ fuzzy->addFuzzyRule(fuzzyRule14); // Adding FuzzyRule to Fuzzy object
+
+
+
+
+ 
+
   // FuzzyRule "IF distance = moderate and carspeed = fast THEN sitaution = caution"
  FuzzyRuleAntecedent* ifDistanceModerateAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceModerateAndCarspeedFast->joinWithAND(moderate,fast); // Adding corresponding FuzzySet to Antecedent object
@@ -191,6 +288,21 @@ ifDistanceSmallAndCarspeedSlow->joinWithAND(small, slow);
  FuzzyRule* fuzzyRule06 = new FuzzyRule(6, ifDistanceModerateAndCarspeedFast, thenSitThreat); // Passing the Antecedent and the Consequent of expression
  
  fuzzy->addFuzzyRule(fuzzyRule06); // Adding FuzzyRule to Fuzzy object
+
+
+  // FuzzyRule "IF distanceBACK = moderate and carspeed = fast THEN sitaution = caution"
+ FuzzyRuleAntecedent* ifDistanceBACKModerateAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDistanceBACKModerateAndCarspeedFast->joinWithAND(moderate_back,fast); // Adding corresponding FuzzySet to Antecedent object
+
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule15 = new FuzzyRule(15, ifDistanceBACKModerateAndCarspeedFast, thenSitThreat); // Passing the Antecedent and the Consequent of expression
+ 
+ fuzzy->addFuzzyRule(fuzzyRule15); // Adding FuzzyRule to Fuzzy object
+
+
+
+
+ 
 
    // FuzzyRule "IF distance = big and carspeed = slow THEN sitaution = safe"
  FuzzyRuleAntecedent* ifDistanceBigAndCarspeedSlow = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
@@ -202,6 +314,20 @@ ifDistanceSmallAndCarspeedSlow->joinWithAND(small, slow);
  
  fuzzy->addFuzzyRule(fuzzyRule07); // Adding FuzzyRule to Fuzzy object
 
+    // FuzzyRule "IF distanceback = big and carspeed = slow THEN sitaution = safe"
+ FuzzyRuleAntecedent* ifDistanceBACKBigAndCarspeedSlow = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDistanceBACKBigAndCarspeedSlow->joinWithAND(big_back,slow); // Adding corresponding FuzzySet to Antecedent object
+
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule16 = new FuzzyRule(16, ifDistanceBACKBigAndCarspeedSlow, thenSitSafe); // Passing the Antecedent and the Consequent of expression
+ 
+ fuzzy->addFuzzyRule(fuzzyRule16); // Adding FuzzyRule to Fuzzy object
+
+
+
+
+ 
+
     // FuzzyRule "IF distance = big and carspeed = average THEN sitaution = safe"
  FuzzyRuleAntecedent* ifDistanceBigAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
  ifDistanceBigAndCarspeedSlow->joinWithAND(big,average); // Adding corresponding FuzzySet to Antecedent object
@@ -211,6 +337,20 @@ ifDistanceSmallAndCarspeedSlow->joinWithAND(small, slow);
  FuzzyRule* fuzzyRule08 = new FuzzyRule(8, ifDistanceBigAndCarspeedAverage, thenSitSafe); // Passing the Antecedent and the Consequent of expression
  
  fuzzy->addFuzzyRule(fuzzyRule08); // Adding FuzzyRule to Fuzzy object
+
+
+    // FuzzyRule "IF distance = big and carspeed = average THEN sitaution = safe"
+ FuzzyRuleAntecedent* ifDistanceBACKBigAndCarspeedAverage = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDistanceBACKBigAndCarspeedSlow->joinWithAND(big_back,average); // Adding corresponding FuzzySet to Antecedent object
+
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule17 = new FuzzyRule(17, ifDistanceBACKBigAndCarspeedAverage, thenSitSafe); // Passing the Antecedent and the Consequent of expression
+ 
+ fuzzy->addFuzzyRule(fuzzyRule17); // Adding FuzzyRule to Fuzzy object
+
+
+
+
 
    // FuzzyRule "IF distance = big and carspeed = fast THEN sitaution = caution"
  FuzzyRuleAntecedent* ifDistanceBigAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
@@ -222,14 +362,26 @@ ifDistanceSmallAndCarspeedSlow->joinWithAND(small, slow);
  
  fuzzy->addFuzzyRule(fuzzyRule09); // Adding FuzzyRule to Fuzzy object
 
+
+   // FuzzyRule "IF distanceBACK = big and carspeed = fast THEN sitaution = caution"
+ FuzzyRuleAntecedent* ifDistanceBACKBigAndCarspeedFast = new FuzzyRuleAntecedent(); // Instantiating an Antecedent to expression
+ ifDistanceBACKBigAndCarspeedFast->joinWithAND(big_back,fast); // Adding corresponding FuzzySet to Antecedent object
+ 
+ // Instantiating a FuzzyRule object
+ FuzzyRule* fuzzyRule18 = new FuzzyRule(18, ifDistanceBACKBigAndCarspeedFast, thenSitCaution); // Passing the Antecedent and the Consequent of expression
+ 
+ fuzzy->addFuzzyRule(fuzzyRule18); // Adding FuzzyRule to Fuzzy object
+ 
+
 }
 
 void loop() {
+
   // put your main code here, to run repeatedly:
   delay(1000);
     digitalWrite(redLed,LOW);
-   digitalWrite(greenLed,LOW);
-    digitalWrite(blueLed,LOW);
+  // digitalWrite(greenLed,LOW);
+ //   digitalWrite(blueLed,LOW);
   y =analogRead(A1);
   Serial.println("y=");
   Serial.println(y);
@@ -241,15 +393,29 @@ void loop() {
   if(n>255)
     n=255;
   motorspeed(n);
+
+  
    // establish variables for duration of the ping, 
   // Clears the trigPin
 digitalWrite(trigPin, LOW);
 delayMicroseconds(2);
 
+//Clears the trigPin_back
+digitalWrite(trigPin_back, LOW);
+delayMicroseconds(2);
+
+
+
 // Sets the trigPin on HIGH state for 10 micro seconds
 digitalWrite(trigPin, HIGH);
 delayMicroseconds(10);
 digitalWrite(trigPin, LOW);
+
+// Sets the trigPin on HIGH state for 10 micro seconds
+digitalWrite(trigPin_back, HIGH);
+delayMicroseconds(10);
+digitalWrite(trigPin_back, LOW);
+
 
 // Reads the echoPin, returns the sound wave travel time in microseconds
 duration = pulseIn(echoPin, HIGH);
@@ -261,10 +427,23 @@ distance= duration*0.034/2;
 Serial.print("Distance: ");
 Serial.println(distance);
 
+
+// Reads the echoPin, returns the sound wave travel time in microseconds
+duration_back = pulseIn(echoPin_back, HIGH);
+
+// Calculating the distance
+distance_back= duration_back*0.034/2;
+
+// Prints the distance on the Serial Monitor
+Serial.print("Distance BACK: ");
+Serial.println(distance_back);
+
+
 // APPLY FUZZY LOGIC
 
 // Step 5 - Report inputs value, passing its ID and value
 fuzzy->setInput(1, distance);
+fuzzy->setInput(3, distance_back);
 fuzzy->setInput(2, n); //speed
  // Step 6 - Exe the fuzzification
  fuzzy->fuzzify(); 
@@ -274,14 +453,14 @@ fuzzy->setInput(2, n); //speed
  Serial.print("Output is: ");
  Serial.println(output);
   digitalWrite(redLed,LOW);
-   digitalWrite(greenLed,LOW);
-    digitalWrite(blueLed,LOW);
+ //  digitalWrite(greenLed,LOW);
+ //   digitalWrite(blueLed,LOW);
 
 if(output>7)
 {
     digitalWrite(redLed,LOW);
-   digitalWrite(greenLed,LOW);
-    digitalWrite(blueLed,LOW);
+//   digitalWrite(greenLed,LOW);
+//    digitalWrite(blueLed,LOW);
   for(int i=0;i<output-3;i++)
   {
   tone(buzzer,1000);
@@ -290,7 +469,7 @@ if(output>7)
   delay(100);
   }
     String getData = "GET /update?api_key="+ API +"&"+ field1 +"="+String(Serial_Number)+ "&" + field2 + "=" + String(Device_Name)+ "&" + field3 + "=" + String(output);
-sendCommand("AT+CIPMUX=1",5,"OK");
+ sendCommand("AT+CIPMUX=1",5,"OK");
  sendCommand("AT+CIPSTART=0,\"TCP\",\""+ HOST +"\","+ PORT,15,"OK");
  sendCommand("AT+CIPSEND=0," +String(getData.length()+4),4,">");
  esp8266.println(getData);delay(1500);countTrueCommand++;
@@ -303,8 +482,8 @@ sendCommand("AT+CIPMUX=1",5,"OK");
   else if(output>5)
   {
      
-   digitalWrite(greenLed,LOW);
-    digitalWrite(blueLed,LOW);
+//   digitalWrite(greenLed,LOW);
+//    digitalWrite(blueLed,LOW);
     for(int i=0;i<3;i++)
   {
     digitalWrite(redLed,HIGH);
@@ -318,13 +497,13 @@ sendCommand("AT+CIPMUX=1",5,"OK");
     else if(output>3)
     {
         digitalWrite(redLed,LOW);
-   digitalWrite(greenLed,LOW);
+//   digitalWrite(greenLed,LOW);
    
       for(int i=0;i<3;i++)
   {
-     digitalWrite(blueLed,HIGH);
+//     digitalWrite(blueLed,HIGH);
     //  delay(1000);
-     digitalWrite(blueLed,LOW);
+//     digitalWrite(blueLed,LOW);
     //  delay(1000);
 
   }
@@ -334,18 +513,18 @@ sendCommand("AT+CIPMUX=1",5,"OK");
      {
 
           digitalWrite(redLed,LOW);
-        digitalWrite(blueLed,LOW);
-        for(int i=0;i<3;i++)
-        {
-          digitalWrite(greenLed,HIGH); 
-            // delay(1000);
-           digitalWrite(greenLed,LOW); 
-            // delay(1000);
-        }
+//        digitalWrite(blueLed,LOW);
+//        for(int i=0;i<3;i++)
+//        {
+//          digitalWrite(greenLed,HIGH); 
+//            // delay(1000);
+//           digitalWrite(greenLed,LOW); 
+//            // delay(1000);
+//        }
       }
       digitalWrite(redLed,LOW);
-   digitalWrite(greenLed,LOW);
-    digitalWrite(blueLed,LOW);
+//   digitalWrite(greenLed,LOW);
+//    digitalWrite(blueLed,LOW);
 
 }
 void motorspeed(int n)
